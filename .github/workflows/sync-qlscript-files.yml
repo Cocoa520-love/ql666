@@ -1,0 +1,34 @@
+name: Sync QLScriptPublic Files
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每小时自动同步一次
+  workflow_dispatch:     # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repo
+        uses: actions/checkout@v3
+
+      - name: Download mxbc.js
+        run: |
+          curl -o mxbc.js https://raw.githubusercontent.com/smallfawn/QLScriptPublic/main/mxbc.js
+
+      - name: Download sfsy.js
+        run: |
+          curl -o sfsy.js https://raw.githubusercontent.com/smallfawn/QLScriptPublic/main/sfsy.js
+
+      - name: Download wxapp/hdl.js
+        run: |
+          mkdir -p wxapp
+          curl -o wxapp/hdl.js https://raw.githubusercontent.com/smallfawn/QLScriptPublic/main/wxapp/hdl.js
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto-sync QLScriptPublic files" || echo "No changes"
+          git push
